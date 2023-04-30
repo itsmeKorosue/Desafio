@@ -1,0 +1,102 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class Conta {
+    protected int numero;
+    protected double saldo;
+
+    public Conta(int numero) {
+        this.numero = numero;
+        this.saldo = 0;
+    }
+
+    public int getNumero() {
+        return numero;
+    }
+
+    public double getSaldo() {
+        return saldo;
+    }
+
+    public void depositar(double valor) {
+        saldo += valor;
+    }
+
+    public void sacar(double valor) {
+        if (valor <= saldo) {
+            saldo -= valor;
+        } else {
+            System.out.println("Saldo insuficiente");
+        }
+    }
+
+    public void transferir(Conta contaDestino, double valor) {
+        if (valor <= saldo) {
+            sacar(valor);
+            contaDestino.depositar(valor);
+        } else {
+            System.out.println("Saldo insuficiente");
+        }
+    }
+}
+
+public class ContaCorrente extends Conta {
+    private double limite;
+
+    public ContaCorrente(int numero, double limite) {
+        super(numero);
+        this.limite = limite;
+    }
+
+    public double getLimite() {
+        return limite;
+    }
+
+    @Override
+    public void sacar(double valor) {
+        if (valor <= saldo + limite) {
+            saldo -= valor;
+        } else {
+            System.out.println("Limite insuficiente");
+        }
+    }
+}
+
+public class ContaPoupanca extends Conta {
+    private double taxa;
+
+    public ContaPoupanca(int numero, double taxa) {
+        super(numero);
+        this.taxa = taxa;
+    }
+
+    public double getTaxa() {
+        return taxa;
+    }
+
+    public void renderJuros() {
+        saldo += saldo * taxa;
+    }
+}
+
+public class Banco {
+    private List<Conta> contas = new ArrayList<>();
+
+    public void criarContaCorrente(int numero, double limite) {
+        contas.add(new ContaCorrente(numero, limite));
+    }
+
+    public void criarContaPoupanca(int numero, double taxa) {
+        contas.add(new ContaPoupanca(numero, taxa));
+    }
+
+    public Conta buscarConta(int numero) {
+        for (Conta conta : contas) {
+            if (conta.getNumero() == numero) {
+                return conta;
+            }
+        }
+        return null;
+    }
+}
+
